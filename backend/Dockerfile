@@ -1,4 +1,3 @@
-# backend/Dockerfile
 FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
 WORKDIR /app
@@ -7,9 +6,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy your backend code
+# Copy your backend code and the startup script
 COPY . .
 
-# Note: The actual start command will be defined in Render dashboard.
-# For the web API: uvicorn main:app --host 0.0.0.0 --port $PORT
-# For the worker: celery -A worker worker --loglevel=info
+# Give the script execution permissions
+RUN chmod +x start.sh
+
+# Run the script when the container launches
+CMD ["./start.sh"]
