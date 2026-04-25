@@ -4,11 +4,16 @@ import csv
 import random
 import re
 import argparse
+import os
+from supabase import create_client
 from datetime import datetime
 from pathlib import Path
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
+from supabase import create_client, Client
 
-OUTPUT_DIR = Path("output")
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
+
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 PAGE_LOAD_TIMEOUT  = 20_000
@@ -393,12 +398,19 @@ FIELDNAMES = [
 def save_results(results: list[dict], stem: str):
     if not results:
         return
-    with open(OUTPUT_DIR / f"{stem}.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2, ensure_ascii=False)
-    with open(OUTPUT_DIR / f"{stem}.csv", "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDNAMES, extrasaction="ignore")
-        writer.writeheader()
-        writer.writerows(results)
+        
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        print("⚠️ Supabase credentials missing. Data not saved.")
+        return
+        
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    
+    try:
+        # Insert all scraped profiles directly into the Supabase database
+        response = supabase.table("leads").insert(results).execute()
+        print(f"✅ Saved {len(results)} leads to Supabase!")
+    except Exception as e:
+        print(f"❌ Failed to save to Supabase: {e}")
 
 def print_summary(results: list[dict], stem: str):
     print(f"\n{'='*58}")
