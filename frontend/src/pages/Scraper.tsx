@@ -11,6 +11,7 @@ export default function Scraper() {
     if (!query) return alert("Please enter some hashtags!");
     setIsScraping(true);
     try {
+      console.log("THE RAW VITE ENV IS:", import.meta.env.VITE_API_URL);
       const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
       await fetch(`${API_URL}/scrape/start`, {
         method: 'POST',
