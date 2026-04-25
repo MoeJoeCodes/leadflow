@@ -10,7 +10,8 @@ export default function Results() {
   const fetchLeads = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/leads');
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const res = await fetch(`${API_URL}/leads`);
       const data = await res.json();
       setLeads(data);
     } catch (error) {

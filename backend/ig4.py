@@ -14,7 +14,6 @@ from supabase import create_client, Client
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
 
-OUTPUT_DIR.mkdir(exist_ok=True)
 
 PAGE_LOAD_TIMEOUT  = 20_000
 SCROLL_PAUSE_MIN   = 2.0

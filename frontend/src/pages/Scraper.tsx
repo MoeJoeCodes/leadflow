@@ -11,11 +11,11 @@ export default function Scraper() {
     if (!query) return alert("Please enter some hashtags!");
     setIsScraping(true);
     try {
-      const hashtags = query.split(',').map(tag => tag.trim());
-      await fetch('http://localhost:8000/scrape/start', {
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      await fetch(`${API_URL}/scrape/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hashtags, limit })
+        body: JSON.stringify({ hashtags: [query], limit: 10 })
       });
       alert("Scraper started successfully in the background!");
     } catch (error) {
